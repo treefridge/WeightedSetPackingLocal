@@ -1,6 +1,7 @@
+
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
+
 
 /**
  * 
@@ -15,30 +16,10 @@ import java.util.Iterator;
 public class DataSets {
 
 	public static Hashtable<String[], Integer> weights = new Hashtable<String[], Integer>();
-	public static ArrayList<String> setOfIngredients= new ArrayList<String>();
+	public static ArrayList<String> setOfIngredients = new ArrayList<String>();
 	public static ArrayList<String[]> setOfRecipies= new ArrayList<String[]>();
-	
-	private final int MAX_WEIGHT=100;
-	private final int MIN_WEIGHT=1;
-	
 
-	static String a="Flour";
-	static String b="Milk";
-	static String c="Chilli Peppers";
-	static String d="Chocolate Chips";
-	static String e="Vegetable Stock";
-	static String f="Butter";
-	static String g="Corn Starch";
-	static String h="Apples";
 	
-	
-	
-//	public static void  main(String args[]){
-//		makeData();
-//		
-//		System.out.println(setOfIngredients.toString());
-//	
-//	}
 	
 	
 	/**
@@ -46,14 +27,25 @@ public class DataSets {
 	 */
 	public static void makeData(){
 		
-		setOfIngredients.add(a);
-		setOfIngredients.add(b);
-		setOfIngredients.add(c);
-		setOfIngredients.add(d);
-		setOfIngredients.add(e);
-		setOfIngredients.add(f);
-		setOfIngredients.add(g);
-		setOfIngredients.add(h);
+		setOfIngredients.add("Flour"); 				//a
+		setOfIngredients.add("Milk");				//b
+		setOfIngredients.add("Chilli Peppers");		//c
+		setOfIngredients.add("Chocolate Chips");	//d
+		setOfIngredients.add("Vegetable Stock");	//e
+		setOfIngredients.add("Butter");				//f
+		setOfIngredients.add("Corn Starch");		//g
+		setOfIngredients.add("Apples");				//h
+		
+		//used to make recipe code cleaner
+		String a=setOfIngredients.get(0);
+		String b=setOfIngredients.get(1);
+		String c=setOfIngredients.get(2);
+		String d=setOfIngredients.get(3);
+		String e=setOfIngredients.get(4);
+		String f=setOfIngredients.get(5);
+		String g=setOfIngredients.get(6);
+		String h=setOfIngredients.get(7);
+		
 		
 		String[] recipie1= {a,b,d};
 		String[] recipie2= {a,g,h,b,e};
