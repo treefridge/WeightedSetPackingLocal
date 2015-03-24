@@ -34,7 +34,7 @@ public class LocalSearch {
 		Arrays.fill(currentRecipes, false); //initialize all values to false
 
 		ArrayList<String[]> startingSolution=getStartingSolution();
-		
+
 		System.out.println("Total weight = "+totalWeight);
 
 	}
@@ -50,32 +50,47 @@ public class LocalSearch {
 		String[] recipe;
 
 		for(int k=0; k<setOfRecipies.size(); k++){
-			recipeLoop:
+		
 				if(currentRecipes[k]==false){ //if recipe not already in solution
 
-					//check if this recipe is disjoint with solution
 					recipe=setOfRecipies.get(k);
-					for(int l=0; l<solution.size();l++){ //iterate through the subset(s) of solution
-						for(int m=0; m<solution.get(l).length; m++){ //iterate through the content of each subset of solution
-							for(int n=0; n<recipe.length; n++){ //iterate through the content of recipe being considered
 
-								if(recipe[n]==solution.get(l)[m]) { //intersects with solution
-									break recipeLoop; //go to next recipe 
-								}
-							}
-						}
+					if(isDisjoint(recipe, solution)){
+
+						//add recipe to solution
+						solution.add(recipe);
+						currentRecipes[k]=true;
+						totalWeight+=weights.get(recipe);
 					}
-
-					//add recipe to solution
-					solution.add(recipe);
-					currentRecipes[k]=true;
-					totalWeight+=weights.get(recipe);
-
-				}//else go to next recipe 
+				}// go to next recipe 
 		}
 
 		return solution;
 	}
+
+	/**
+	 * Checks whether a recipe is disjoint with the current solution
+	 * @param recipe
+	 * @param solution
+	 * @return true/false
+	 */
+	private static boolean isDisjoint(String[] recipe,
+			ArrayList<String[]> solution) {
+
+		//check if this recipe is disjoint with solution
+		for(int l=0; l<solution.size();l++){ //iterate through the subset(s) of solution
+			for(int m=0; m<solution.get(l).length; m++){ //iterate through the content of each subset of solution
+				for(int n=0; n<recipe.length; n++){ //iterate through the content of recipe being considered
+
+					if(recipe[n]==solution.get(l)[m]) { //intersects with solution
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 
 	/**
 	 * Swaps out t subsets with some collection of greater total weight that does not intersect with remainder of solution<br>
@@ -84,7 +99,7 @@ public class LocalSearch {
 	 * @return optimal solution for local search
 	 */
 	private static ArrayList<String[]> doLocalSearch(ArrayList<String[]> solution) {
-		
+
 		ArrayList<String[]> swappingOut=new ArrayList<String[]>();
 		ArrayList<String[]> swappingIn=new ArrayList<String[]>();
 
@@ -93,23 +108,23 @@ public class LocalSearch {
 			//randomly choose a subset in the solution to swap out
 			swappingOut.add(solution.get((int) Math.round(Math.random()*solution.size())));
 		}
-		
+
 		//store the "swapped-out"'s total weight 
 		int previousTotalWeight=0;
 		for(int j=0; j<t;j++){
 			previousTotalWeight+= weights.get(swappingOut.get(j));
 		}
-		
+
 		//find a set of subsets that are disjoint with remainder of solution and have higher total weight
-		
+
 
 		return null;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	//	/**
 	//	 * Takes current solution and adds on neighbor that is pairwise disjoint with largest weight 
