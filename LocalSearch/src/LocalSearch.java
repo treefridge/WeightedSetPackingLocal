@@ -16,7 +16,8 @@ public class LocalSearch {
 	private static ArrayList<String[]> setOfRecipies= new ArrayList<String[]>();
 	private static boolean[] currentRecipes; //used to store which recipes are in current solution
 	private static int totalWeight=0;
-	
+	private final static int t=2; //number of subsets that get swapped out during doLocalSearch()
+
 	/**
 	 * @param args
 	 */
@@ -38,25 +39,14 @@ public class LocalSearch {
 
 	}
 
-	/**
-	 * @param solution
-	 * @return optimal solution for local search
-	 */
-	private static ArrayList<String[]> doLocalSearch(ArrayList<String[]> solution) {
-
- //TO-DO
-
-		return null;
-	}
 
 	/**
 	 * @return a starting solution 
 	 */
 	private static ArrayList<String[]> getStartingSolution() {
 
-
 		ArrayList<String[]> solution=new ArrayList<String[]>();
-		
+
 		String[] recipe;
 
 		for(int k=0; k<setOfRecipies.size(); k++){
@@ -79,13 +69,47 @@ public class LocalSearch {
 					//add recipe to solution
 					solution.add(recipe);
 					currentRecipes[k]=true;
-					totalWeight= totalWeight + weights.get(recipe);
+					totalWeight+=weights.get(recipe);
 
 				}//else go to next recipe 
 		}
 
 		return solution;
 	}
+
+	/**
+	 * Swaps out t subsets with some collection of greater total weight that does not intersect with remainder of solution<br>
+	 * The potential "swapped-out" subsets are chosen randomly 
+	 * @param solution
+	 * @return optimal solution for local search
+	 */
+	private static ArrayList<String[]> doLocalSearch(ArrayList<String[]> solution) {
+		
+		ArrayList<String[]> swappingOut=new ArrayList<String[]>();
+		ArrayList<String[]> swappingIn=new ArrayList<String[]>();
+
+		//choose subsets that will be potentially swapped out
+		for(int i=0; i<t;i++){
+			//randomly choose a subset in the solution to swap out
+			swappingOut.add(solution.get((int) Math.round(Math.random()*solution.size())));
+		}
+		
+		//store the "swapped-out"'s total weight 
+		int previousTotalWeight=0;
+		for(int j=0; j<t;j++){
+			previousTotalWeight+= weights.get(swappingOut.get(j));
+		}
+		
+		//find a set of subsets that are disjoint with remainder of solution and have higher total weight
+		
+
+		return null;
+	}
+	
+	
+	
+	
+	
 
 	//	/**
 	//	 * Takes current solution and adds on neighbor that is pairwise disjoint with largest weight 
