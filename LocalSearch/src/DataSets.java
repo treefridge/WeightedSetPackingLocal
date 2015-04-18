@@ -23,7 +23,7 @@ public class DataSets {
 	/**
 	 * creates the all data sets: weights, setOfIngredients, and setOfRecipies
 	 */
-	public static void makeData(){
+	public void makeData(){
 
 		setOfIngredients.add("Flour"); 				//a
 		setOfIngredients.add("Milk");				//b
@@ -45,60 +45,49 @@ public class DataSets {
 		String h=setOfIngredients.get(7);
 
 
-		String[] recipie1= {a,b,d};
-		String[] recipie2= {a,g,h,b,e};
-		String[] recipie3= {b,c,d,e};
-		String[] recipie4= {a,c,e,g};
-		String[] recipie5= {h,g,f,e,a};
-		String[] recipie6= {a,c,e,g};
-		String[] recipie7= {h};
+		String[] recipe1= {a,b,d};
+		String[] recipe2= {a,g,h,b,e};
+		String[] recipe3= {b,c,d,e};
+		String[] recipe4= {a,c,e,g};
+		String[] recipe5= {h,g,f,e,a};
+		String[] recipe6= {a,c,e,g};
+		String[] recipe7= {h};
 
-		setOfRecipies.add(recipie1);
-		setOfRecipies.add(recipie2);
-		setOfRecipies.add(recipie3);
-		setOfRecipies.add(recipie4);
-		setOfRecipies.add(recipie5);
-		setOfRecipies.add(recipie6);
-		setOfRecipies.add(recipie7);
+		setOfRecipies.add(recipe1);
+		setOfRecipies.add(recipe2);
+		setOfRecipies.add(recipe3);
+		setOfRecipies.add(recipe4);
+		setOfRecipies.add(recipe5);
+		setOfRecipies.add(recipe6);
+		setOfRecipies.add(recipe7);
 
-		weights.put(recipie1, 4);
-		weights.put(recipie2, 8);
-		weights.put(recipie3, 2);
-		weights.put(recipie4, 5);
-		weights.put(recipie5, 7);
-		weights.put(recipie6, 3);
-		weights.put(recipie7, 5);
-
+		weights.put(recipe1, 4);
+		weights.put(recipe2, 8);
+		weights.put(recipe3, 2);
+		weights.put(recipe4, 5);
+		weights.put(recipe5, 7);
+		weights.put(recipe6, 3);
+		weights.put(recipe7, 5);
 	}
 
 	/**
 	 * @return Hashtable<String[], Integer> weights
 	 */
-	public static Hashtable<String[], Integer> getWeights() {
+	public Hashtable<String[], Integer> getWeights() {
 		return weights;
 	}
-
-
 
 	/**
 	 * @return ArrayList<String> setOfIngredients
 	 */
-	public static ArrayList<String> getSetOfIngredients() {
+	public ArrayList<String> getSetOfIngredients() {
 		return setOfIngredients;
 	}
-
-
-
 
 	/**
 	 * @return ArrayList<String[]> setOfRecipies
 	 */
-	public static ArrayList<String[]> getSetOfRecipies() {
+	public ArrayList<String[]> getSetOfRecipes() {
 		return setOfRecipies;
 	}
-
-
-
-
-
 }
