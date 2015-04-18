@@ -7,19 +7,28 @@ import java.util.Hashtable;
  */
 public class LocalSearch {
 
-	private Hashtable<String[], Integer> weights = new Hashtable<String[], Integer>();
-	private ArrayList<String> setOfIngredients= new ArrayList<String>();
-	private ArrayList<String[]> setOfRecipes= new ArrayList<String[]>();
+	private Hashtable<Integer[], Integer> weights = new Hashtable<Integer[], Integer>();
+	private ArrayList<Integer> setOfIngredients= new ArrayList<Integer>();
+	private ArrayList<Integer[]> setOfRecipes= new ArrayList<Integer[]>();
 	private boolean[] currentRecipes; //used to store which recipes are in current solution
 	private int totalWeight=0;
-	private final int T = 2; //number of subsets that get swapped out during doLocalSearch()
+	private static final int NUM_SUBSET_REMOVED = 2; //number of subsets that get swapped out during doLocalSearch()
+	/**
+	 * The number of subsets to add back in is defined as the number x of subsets to add back in s.t.
+	 * x <= NUM_SUBSET_REMOVED + SUBSET_ADD_WINDOW
+	 * x >= NUM_SUBSET_REMOVED - SUBSET_ADD_WINDOW
+	 */
+	private static final int SUBSET_ADD_WINDOW = 1;
+	
+	private static final int NUM_SWAP_TRIES = 30; // Number of subsets to evaluate for adding back in
+
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		LocalSearch in = new LocalSearch();
-		ArrayList<String[]> startingSolution = in.getStartingSolution();
+		ArrayList<Integer[]> startingSolution = in.getStartingSolution();
 
 
 		System.out.println("Total weight = "+in.totalWeight);
@@ -41,10 +50,9 @@ public class LocalSearch {
 	/**
 	 * @return a starting solution 
 	 */
-	private ArrayList<String[]> getStartingSolution() {
-
-		ArrayList<String[]> solution=new ArrayList<String[]>();
-		String[] recipe;
+	private ArrayList<Integer[]> getStartingSolution() {
+		ArrayList<Integer[]> solution=new ArrayList<Integer[]>();
+		Integer[] recipe;
 
 		for(int k=0; k<setOfRecipes.size(); k++){
 		
@@ -71,8 +79,8 @@ public class LocalSearch {
 	 * @param solution
 	 * @return true/false
 	 */
-	private boolean isDisjoint(String[] recipe,
-			ArrayList<String[]> solution) {
+	private boolean isDisjoint(Integer[] recipe,
+			ArrayList<Integer[]> solution) {
 
 		//check if this recipe is disjoint with solution
 		for(int l=0; l<solution.size();l++){ //iterate through the subset(s) of solution
@@ -94,20 +102,21 @@ public class LocalSearch {
 	 * @param solution
 	 * @return optimal solution for local search
 	 */
-	private ArrayList<String[]> doLocalSearch(ArrayList<String[]> solution) {
+	private ArrayList<Integer[]> doLocalSearch(ArrayList<Integer[]> solution) {
 
-		ArrayList<String[]> swappingOut=new ArrayList<String[]>();
-		ArrayList<String[]> swappingIn=new ArrayList<String[]>();
+		ArrayList<Integer[]> swappingOut=new ArrayList<Integer[]>();
+		ArrayList<Integer[]> swappingIn=new ArrayList<Integer[]>();
+		
 
 		//choose subsets that will be potentially swapped out
-		for(int i=0; i<T;i++){
+		for(int i=0; i<NUM_SUBSET_REMOVED;i++){
 			//randomly choose a subset in the solution to swap out
 			swappingOut.add(solution.get((int) Math.round(Math.random()*solution.size())));
 		}
 
 		//store the "swapped-out"'s total weight 
 		int previousTotalWeight=0;
-		for(int j=0; j<T;j++){
+		for(int j=0; j<NUM_SUBSET_REMOVED;j++){
 			previousTotalWeight+= weights.get(swappingOut.get(j));
 		}
 

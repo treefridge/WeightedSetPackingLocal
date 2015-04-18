@@ -15,9 +15,9 @@ import java.util.Hashtable;
  */
 public class DataSets {
 
-	private static Hashtable<String[], Integer> weights = new Hashtable<String[], Integer>();
-	private static ArrayList<String> setOfIngredients = new ArrayList<String>();
-	private static ArrayList<String[]> setOfRecipies= new ArrayList<String[]>();
+	private static Hashtable<Integer[], Integer> weights = new Hashtable<Integer[], Integer>();
+	private static ArrayList<Integer> setOfIngredients = new ArrayList<Integer>();
+	private static ArrayList<Integer[]> setOfRecipies= new ArrayList<Integer[]>();
 
 
 	/**
@@ -25,33 +25,33 @@ public class DataSets {
 	 */
 	public void makeData(){
 
-		setOfIngredients.add("Flour"); 				//a
-		setOfIngredients.add("Milk");				//b
-		setOfIngredients.add("Chilli Peppers");		//c
-		setOfIngredients.add("Chocolate Chips");	//d
-		setOfIngredients.add("Vegetable Stock");	//e
-		setOfIngredients.add("Butter");				//f
-		setOfIngredients.add("Corn Starch");		//g
-		setOfIngredients.add("Apples");				//h
+		setOfIngredients.add(1); 				//a
+		setOfIngredients.add(2);				//b
+		setOfIngredients.add(3);				//c
+		setOfIngredients.add(4);				//d
+		setOfIngredients.add(5);				//e
+		setOfIngredients.add(6);				//f
+		setOfIngredients.add(7);				//g
+		setOfIngredients.add(8);				//h
 
 		//used to make recipe code cleaner
-		String a=setOfIngredients.get(0);
-		String b=setOfIngredients.get(1);
-		String c=setOfIngredients.get(2);
-		String d=setOfIngredients.get(3);
-		String e=setOfIngredients.get(4);
-		String f=setOfIngredients.get(5);
-		String g=setOfIngredients.get(6);
-		String h=setOfIngredients.get(7);
+		Integer a=setOfIngredients.get(0);
+		Integer b=setOfIngredients.get(1);
+		Integer c=setOfIngredients.get(2);
+		Integer d=setOfIngredients.get(3);
+		int e=setOfIngredients.get(4);
+		int f=setOfIngredients.get(5);
+		int g=setOfIngredients.get(6);
+		int h=setOfIngredients.get(7);
 
 
-		String[] recipe1= {a,b,d};
-		String[] recipe2= {a,g,h,b,e};
-		String[] recipe3= {b,c,d,e};
-		String[] recipe4= {a,c,e,g};
-		String[] recipe5= {h,g,f,e,a};
-		String[] recipe6= {a,c,e,g};
-		String[] recipe7= {h};
+		Integer[] recipe1= {a,b,d};
+		Integer[] recipe2= {a,g,h,b,e};
+		Integer[] recipe3= {b,c,d,e};
+		Integer[] recipe4= {a,c,e,g};
+		Integer[] recipe5= {h,g,f,e,a};
+		Integer[] recipe6= {a,c,e,g};
+		Integer[] recipe7= {h};
 
 		setOfRecipies.add(recipe1);
 		setOfRecipies.add(recipe2);
@@ -73,21 +73,21 @@ public class DataSets {
 	/**
 	 * @return Hashtable<String[], Integer> weights
 	 */
-	public Hashtable<String[], Integer> getWeights() {
+	public Hashtable<Integer[], Integer> getWeights() {
 		return weights;
 	}
 
 	/**
 	 * @return ArrayList<String> setOfIngredients
 	 */
-	public ArrayList<String> getSetOfIngredients() {
+	public ArrayList<Integer> getSetOfIngredients() {
 		return setOfIngredients;
 	}
 
 	/**
 	 * @return ArrayList<String[]> setOfRecipies
 	 */
-	public ArrayList<String[]> getSetOfRecipes() {
+	public ArrayList<Integer[]> getSetOfRecipes() {
 		return setOfRecipies;
 	}
 }
