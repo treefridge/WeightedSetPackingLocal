@@ -15,7 +15,7 @@ public class LocalSearch {
 	private ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 	private ArrayList<Recipe> currentSolution = new ArrayList<Recipe>();
 	private ArrayList<Recipe> otherCandidates = new ArrayList<Recipe>();
-	private ArrayList<ArrayList<Integer>> neighborMatrix = new ArrayList<ArrayList<Integer>>();
+	private int[][] neighborMatrix;
 
 	private static final int MAX_NUM_SUBSET_REMOVED = 2; //number of subsets that get swapped out during doLocalSearch()//TODO 1 is problem
 	/**
@@ -23,7 +23,7 @@ public class LocalSearch {
 	 * 2 means that the number of recipes for removal is set to currentSolution size / 2 if MAX_NUM_SUBSET_REMOVED is larger than currentSolution size
 	 */
 	private static final int DECREASE_RATIO = 2;
-	
+
 	//TODO make use of this one if iterating over all possible combinations ends up being a bottleneck:
 	private static final int NUM_SWAP_TRIES = 30; // Number of subsets to evaluate for adding back in
 
@@ -40,7 +40,7 @@ public class LocalSearch {
 	public LocalSearch(){
 		DataSet data= new DataSet();
 		recipes = data.getData(); //creates all the data sets
-		neighborMatrix = data.getNeighborMatrix();
+		neighborMatrix = data.getNeighborMatrix(); //initialized all to 2's (not yet checked)
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class LocalSearch {
 			final ArrayList<Recipe> solution) {
 		if(solution.isEmpty())
 			return true;
-		
+
 		//check if this recipe is disjoint with solution
 		for(int l=0; l < solution.size();l++){ //iterate through the subset(s) of solution
 			if(! areDisjointRecipes(recipe, solution.get(l))){
@@ -79,7 +79,7 @@ public class LocalSearch {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Checks whether a recipe is disjoint with another recipe
 	 * @param recipe1
@@ -87,13 +87,60 @@ public class LocalSearch {
 	 * @return
 	 */
 	private boolean areDisjointRecipes(final Recipe recipe1, final Recipe recipe2){
-		if(neighborMatrix.get(recipe1.getRecipeNumber()).get(recipe2.getRecipeNumber()) == 1){
-			return false;
+
+		int intersection = neighborMatrix[recipe1.getRecipeNumber()][recipe2.getRecipeNumber()];
+
+		switch(intersection){
+
+		case 0: return true;
+
+		case 1: return false;
+
+		case 2: checkForDisjoint(recipe1, recipe2);
 		}
-		
-		return true;
+
+		return areDisjointRecipes(recipe1, recipe2); //used iff case 2
+
+
+
+
+
+
+
 	}
 
+
+
+
+	/**
+	 * Used when value for adjacency matrix not yet computed<br>
+	 * Manually checks if 2 recipes are disjoint and then updates adjacency matrix
+	 * @param recipe1
+	 * @param recipe2
+	 */
+	private void checkForDisjoint(Recipe recipe01, Recipe recipe02) {
+
+		Integer[] recipe1= recipe01.getIngredients();
+		Integer[] recipe2 = recipe02.getIngredients();
+
+		for(int i=0; i<recipe1.length; i++){
+			for (int j=0; j<recipe2.length; j++){
+				if(recipe1[i]==recipe2[j]){
+					//update adjacency matrix
+					neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 1;
+					neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 1;
+					return;
+				}
+			}
+		}
+
+		//update adjacency matrix
+		neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 0;
+		neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 0;
+		return;
+
+
+	}
 
 	/**
 	 * Repeatedly swaps out subsets of size <= MAX_NUM_SUBSET_REMOVED with some collection of greater total weight that does not intersect with remainder of solution<br>
@@ -104,20 +151,20 @@ public class LocalSearch {
 		if(currentSolution == null || currentSolution.size() == 0){
 			throw new IllegalArgumentException("Provided solution was invalid.");
 		}
-		
+
 		if(otherCandidates == null || otherCandidates.size() == 0){
 			return currentSolution;
 		}
 
 		boolean keepGoing = true;
-		
+
 		while(keepGoing){
-//			System.out.println("Candidates = "+otherCandidates + " & CurrentSol = "+currentSolution.toString());
+			//			System.out.println("Candidates = "+otherCandidates + " & CurrentSol = "+currentSolution.toString());
 			final int numSubsetsToRemove = getNumSubsetsToRemove(currentSolution.size());
-			
+
 			// Generate all combinations of recipes belonging to the current solution of size numSubsetsToRemove
 			final Generator<Recipe> combinations = getCombinations(currentSolution, numSubsetsToRemove);
-			
+
 			//Iterate over all possible combinations
 			for(ICombinatoricsVector<Recipe> combination : combinations){
 				//Used to store the state of the potential solution set & the rest of the (unpicked) recipes after the swap out occurred:
@@ -126,35 +173,35 @@ public class LocalSearch {
 
 				ArrayList<Recipe> combinationRecipes = convertCombinationToList(combination);
 				ArrayList<Recipe> potentialSwapInRecipes = new ArrayList<Recipe>();
-				
+
 				//Get the index of the recipe to potentially remove from the solution & for which to find neighbors
 				final int indexRecipeForExpansion = (int) Math.random() * combinationRecipes.size();
 
 				final Recipe recipeForExpansion = combinationRecipes.remove(indexRecipeForExpansion);
 				otherCandidatesAfterSwapOut.add(recipeForExpansion);
 				solutionAfterSwapOut.remove(recipeForExpansion);
-				
+
 				//Add all other members of the combination, the ones that don't include recipeForExpansion:
 				potentialSwapInRecipes.addAll(combinationRecipes);
 				otherCandidatesAfterSwapOut.addAll(combinationRecipes);
 				solutionAfterSwapOut.removeAll(combinationRecipes);
-				
+
 				//Find all neighbors for the recipeForExpansion & add them to potentialSwapIns
 				final ArrayList<Recipe> neighbors = findAllNeighbors(recipeForExpansion);
 				potentialSwapInRecipes.addAll(neighbors);
-				
+
 				//TEST PRINTOUTS:
-//				System.out.println("expansion recipe: "+recipeForExpansion);
-//				System.out.println("neighbors: "+neighbors);
-//				System.out.println("before conflict resolution: "+potentialSwapInRecipes);
-				
+				//				System.out.println("expansion recipe: "+recipeForExpansion);
+				//				System.out.println("neighbors: "+neighbors);
+				//				System.out.println("before conflict resolution: "+potentialSwapInRecipes);
+
 				// Now remove all non-disjoint recipes between any and all member recipes of potentialSwapInRecipes
 				potentialSwapInRecipes = resolveAllConflicts(potentialSwapInRecipes,solutionAfterSwapOut);
 
 				//TEST PRINTOUTS:
-//				System.out.println("after conflict resolution: "+potentialSwapInRecipes);
-//				System.out.println("wAfter= "+getTotalWeight(potentialSwapInRecipes) + " wCurr= "+(getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight()));
-				
+				//				System.out.println("after conflict resolution: "+potentialSwapInRecipes);
+				//				System.out.println("wAfter= "+getTotalWeight(potentialSwapInRecipes) + " wCurr= "+(getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight()));
+
 				// Keep this new solution iff the swap in set is larger in weight than the swap out set
 				if(getTotalWeight(potentialSwapInRecipes) > getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight()){
 					//Now we must update the current solution to reflect those taken out & added in
@@ -193,11 +240,11 @@ public class LocalSearch {
 	 */
 	private int getTotalWeight(ArrayList<Recipe> recipes) {
 		int weight = 0;
-		
+
 		for(Recipe recipe : recipes){
 			weight += recipe.getWeight();
 		}
-		
+
 		return weight;
 	}
 
@@ -211,7 +258,7 @@ public class LocalSearch {
 	private boolean reachedLastCombination(Generator<Recipe> combinations, ICombinatoricsVector<Recipe> combination) {
 		List<ICombinatoricsVector<Recipe>> allCombinations = combinations.generateAllObjects();
 		ICombinatoricsVector<Recipe> lastCombination = allCombinations.get(allCombinations.size() - 1);
-		
+
 		return lastCombination.equals(combination)? true : false;
 	}
 
@@ -222,22 +269,22 @@ public class LocalSearch {
 	 * @return potentialSwapIns with all conflicts eliminated (keeping the one of greatest weight, when applicable)
 	 */
 	private ArrayList<Recipe> resolveAllConflicts(ArrayList<Recipe> potentialSwapIns, ArrayList<Recipe> solutionAfterSwapOut) {
-//		for(int i = potentialSwapIns.size() - 1; i > -1; --i){
-//			for(int j = potentialSwapIns.size() - 1; j > -1; --j){
-//				Recipe r1 = potentialSwapIns.get(i);
-//				Recipe r2 = potentialSwapIns.get(j);
-//				// Do not check a recipe against itself, nor a recipe that is already flagged as to-be-removed
-//				if(r1 == r2){
-//					continue;
-//				} else if(! areDisjointRecipes(r1, r2)){
-//					potentialSwapIns.remove(r1.getWeight() >= r2.getWeight()? r2 : r1);
-//				}
-//			}
-//		}
-		
+		//		for(int i = potentialSwapIns.size() - 1; i > -1; --i){
+		//			for(int j = potentialSwapIns.size() - 1; j > -1; --j){
+		//				Recipe r1 = potentialSwapIns.get(i);
+		//				Recipe r2 = potentialSwapIns.get(j);
+		//				// Do not check a recipe against itself, nor a recipe that is already flagged as to-be-removed
+		//				if(r1 == r2){
+		//					continue;
+		//				} else if(! areDisjointRecipes(r1, r2)){
+		//					potentialSwapIns.remove(r1.getWeight() >= r2.getWeight()? r2 : r1);
+		//				}
+		//			}
+		//		}
+
 		// Keep track of all recipes to be removed, avoid making direct changes to potentialSwapIns since we are not using safe Iterator objects
 		ArrayList<Recipe> toBeRemoved = new ArrayList<Recipe>();
-		
+
 		// For each pair of recipes, check if they are in conflict, aka one should be flagged for removal
 		for(Recipe recipe1 : potentialSwapIns){
 			for(Recipe recipe2 : potentialSwapIns){
@@ -251,14 +298,14 @@ public class LocalSearch {
 				}
 			}
 		}
-		
+
 		//Remove all flagged recipes
 		for(Recipe toRemove : toBeRemoved){
 			potentialSwapIns.remove(toRemove);
 		}
-		
+
 		toBeRemoved.clear();
-		
+
 		// For each pair of recipes, between the potentialSwapIns and the currentSolution, check if they are in conflict
 		for(Recipe recipe1 : potentialSwapIns){
 			for(Recipe recipe2 : solutionAfterSwapOut){
@@ -274,12 +321,12 @@ public class LocalSearch {
 				}
 			}
 		}
-		
+
 		//Remove all flagged recipes
 		for(Recipe toRemove : toBeRemoved){
 			potentialSwapIns.remove(toRemove);
 		}
-		
+
 		return potentialSwapIns;
 	}
 
@@ -292,15 +339,15 @@ public class LocalSearch {
 	private ArrayList<Recipe> findAllNeighbors(Recipe recipeForExpansion) {
 		ArrayList<Integer> neighborRecipeNumbers = new ArrayList<Integer>();
 		ArrayList<Recipe> neighborRecipes = new ArrayList<Recipe>();
-		
+
 		int row = recipeForExpansion.getRecipeNumber();
-		
-		for(int col = 0; col < neighborMatrix.size(); col++){
-			if(neighborMatrix.get(row).get(col) == 1){
+
+		for(int col = 0; col < neighborMatrix.length; col++){
+			if(neighborMatrix[row][col] == 1){
 				neighborRecipeNumbers.add(col);
 			}
 		}
-		
+
 		for(Integer recipeNumber : neighborRecipeNumbers){
 			for(Recipe recipe : otherCandidates){
 				if(recipeNumber.equals(recipe.getRecipeNumber())){
@@ -308,7 +355,7 @@ public class LocalSearch {
 				}
 			}
 		}
-		
+
 		return neighborRecipes;
 	}
 
@@ -342,7 +389,7 @@ public class LocalSearch {
 
 		// TEST Print all possible combinations
 		//printAllPossibleCombinations(gen);
-		
+
 		return gen;
 	}
 
@@ -357,11 +404,11 @@ public class LocalSearch {
 		while(num > size){
 			num = size / DECREASE_RATIO;
 		}
-		
+
 		if(num < 1){
 			num = 1;
 		}
-		
+
 		return num;
 	}
 
