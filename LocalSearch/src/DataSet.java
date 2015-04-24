@@ -15,24 +15,26 @@ import java.util.Hashtable;
 public class DataSet {
 
 	private ArrayList<Recipe> recipes;
-	private ArrayList<ArrayList<Integer>> neighborMatrix = new ArrayList<ArrayList<Integer>>();
 
-	public ArrayList<ArrayList<Integer>> getNeighborMatrix() {//TODO replace with dynamic creation
-//		{{1,0,1,0,0,0,1},
-//		 {0,1,0,1,1,0,0},
-//		 {1,0,1,0,0,0,1},
-//		 {0,1,0,1,1,0,0},
-//		 {0,1,0,1,1,0,0},
-//		 {0,0,0,0,0,1,0},
-//		 {1,0,1,0,0,0,1}};
+	/**
+	 * 0 = not intersecting<br>
+	 * 1= intersecting<br>
+	 * 2 = not checked yet 
+	 */
+	private int neighborMatrix[][]; 
+
+	/**
+	 * @return the adjacency matrix for all recipes. Initialized all to 2, not checked yet
+	 */
+	public int[][] getNeighborMatrix() {
 		
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(1,0,1,0,0,0,1)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(0,1,0,1,1,0,0)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(1,0,1,0,0,0,1)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(0,1,0,1,1,0,0)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(0,1,0,1,1,0,0)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(0,0,0,0,0,1,0)));
-		neighborMatrix.add(new ArrayList<Integer>(Arrays.asList(1,0,1,0,0,0,1)));
+		neighborMatrix = new int[recipes.size()][recipes.size()];
+		
+		
+		// Fill each row with 2
+		for (int[] row: neighborMatrix)
+		    Arrays.fill(row, 2);
+
 
 		return neighborMatrix;
 	}
@@ -53,7 +55,7 @@ public class DataSet {
 		Integer[] recipe5= {13,14,15,6};	//conflicts with 2,4
 		Integer[] recipe6= {16,17,18};		//conflicts with NOBODY
 		Integer[] recipe7= {19,20,21,1};	//conflicts with 1,3
-		
+
 		recipes.add(new Recipe(recipe1, 1));	//necessarily included in the initial non-greedy solution		
 		recipes.add(new Recipe(recipe2, 1));		
 		recipes.add(new Recipe(recipe3, 1));		
@@ -61,6 +63,7 @@ public class DataSet {
 		recipes.add(new Recipe(recipe5, 1));		
 		recipes.add(new Recipe(recipe6, 1));		
 		recipes.add(new Recipe(recipe7, 125));	//necessarily not included in the initial non-greedy solution, but should be in sol iff works out... :/
+
 		*/
 		
 		int ingredientCount = 0;
@@ -101,6 +104,8 @@ public class DataSet {
 		//testing purposes
 		System.out.println("IngredientCount= " + ingredientCount + " RecipeCount= " + recipeCount + " ActualRecipeCount= " + recipes.size());
 		
+
 		return recipes;
 	}
+
 }
