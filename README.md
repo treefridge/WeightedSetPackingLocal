@@ -5,9 +5,9 @@ Local Search: Attempt to replace a small subset of the solution by some collecti
 Right now, the number of subsets to be replaced is defined by a constant representing the maximum number of them.
 
 ## Remaining:
-- Integrate with benchmarking data source
-- Generate neighbor matrix between subsets/recipes from data
 - Optimize for bottlenecks if runtime is too lengthy (limit number of combinations tried, etc)
+- Implement AnyImp 
+- Add measurement code to compare the algorithms 
+- IDEA: have multiple different starting solutions for basic Local search
+- IDEA: have multiple different benchmark datasets 
 
-
-hello
