@@ -15,6 +15,12 @@ public class LocalSearch {
 	private ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 	private ArrayList<Recipe> currentSolution = new ArrayList<Recipe>();
 	private ArrayList<Recipe> otherCandidates = new ArrayList<Recipe>();
+	
+	/**
+	 * 0 = not intersecting<br>
+	 * 1= intersecting<br>
+	 * 2 = not checked yet 
+	 */
 	private int[][] neighborMatrix;
 
 	private static final int MAX_NUM_SUBSET_REMOVED = 2; //number of subsets that get swapped out during doLocalSearch()//TODO 1 is problem
@@ -29,6 +35,7 @@ public class LocalSearch {
 
 
 	public static void main(String[] args) {
+		
 		LocalSearch in = new LocalSearch();
 		in.initializeStartingSolution();
 		ArrayList<Recipe> sol = in.doLocalSearch();
@@ -101,12 +108,6 @@ public class LocalSearch {
 
 		return areDisjointRecipes(recipe1, recipe2); //used iff case 2
 
-
-
-
-
-
-
 	}
 
 
@@ -125,7 +126,7 @@ public class LocalSearch {
 
 		for(int i=0; i<recipe1.length; i++){
 			for (int j=0; j<recipe2.length; j++){
-				if(recipe1[i]==recipe2[j]){
+				if(recipe1[i].equals(recipe2[j])){
 					//update adjacency matrix
 					neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 1;
 					neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 1;
