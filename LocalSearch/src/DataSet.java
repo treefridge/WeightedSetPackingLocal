@@ -1,5 +1,6 @@
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class DataSet {
 	/**
 	 * creates the all data sets: weights, setOfIngredients, and setOfRecipies
 	 */
-	public ArrayList<Recipe> getData(){
+	public ArrayList<Recipe> getData(File file){
 		if(recipes != null){
 			return recipes;
 		}
@@ -71,12 +72,12 @@ public class DataSet {
 		recipes.add(new Recipe(recipe7, 125));	//necessarily not included in the initial non-greedy solution, but should be in sol iff works out... :/
 
 		*/
-		
+
 		int ingredientCount = 0;
 		int recipeCount = 0;
 		//read from input file
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("recipeset.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
 
 	        String line = br.readLine();
 	        //first line

@@ -1,13 +1,14 @@
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
+
+import org.apache.commons.io.FilenameUtils;
 
 
 public class LocalSearch {
@@ -31,66 +32,76 @@ public class LocalSearch {
 	private static final int DECREASE_RATIO = 2;
 
 	private static final double IMP_THRESHOLD = 1.1;
-	
+
 	//TODO make use of this one if iterating over all possible combinations ends up being a bottleneck:
 	private static final int NUM_SWAP_TRIES = 30; // Number of subsets to evaluate for adding back in
 
 
 	public static void main(String[] args) {
-<<<<<<< HEAD
-		if(args.length != 1){
-			System.out.println("Invalid num arguments, keeling over now.");
-			System.exit(1);
-		}
-		//Check which one we are running, if true, anyImp, else regular local search
-		Boolean isAnyImp = Boolean.parseBoolean(args[0]);
-		
-		LocalSearch in = new LocalSearch();
-		in.initializeStartingSolution(isAnyImp);
-		ArrayList<Recipe> sol = in.doLocalSearch(isAnyImp);
-=======
-		ArrayList<Recipe> sol = null;
-		LocalSearch in = null;
-		
-		//timers
-		double startTime_localStartingSol;
-		double endTime_localStartingSol;
-		double duration_localStartingSol = 0;
-		double startTime_localSearch;
-		double endTime_localSearch;
-		double duration_localSearch=0;
-
-		for(int i=0; i<10; i++){
-			currentSolution = new ArrayList<Recipe>();
-			otherCandidates = new ArrayList<Recipe>();
+		File path = new File("data/");
+		for(File file: path.listFiles()){
 			
-			in = new LocalSearch();
+			String name = FilenameUtils.getExtension(file.getAbsolutePath());
+			if(file != null && !FilenameUtils.getExtension(file.getAbsolutePath()).equals("txt")){
+				continue;
+			}
 
-			//initialize regular local starting solution and time 
-			startTime_localStartingSol = System.nanoTime(); //timer
-			in.initializeStartingSolution();
-			endTime_localStartingSol = System.nanoTime();// timer
-			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
-
-			//do regular local search and time 
-			startTime_localSearch = System.nanoTime(); //timer
-			sol = in.doLocalSearch();
-			endTime_localSearch = System.nanoTime();// timer
-			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+			System.out.println("\nRunning on file:"+ file.getName() + "\n");
+			
+			boolean isAnyImp = false;
+			for(int j = 0; j < 2; j++){
+				if(j == 1){
+					isAnyImp = true;
+				}
+				
+				ArrayList<Recipe> sol = null;
+				LocalSearch in = null;
+				
+				//timers
+				double startTime_localStartingSol;
+				double endTime_localStartingSol;
+				double duration_localStartingSol = 0;
+				double startTime_localSearch;
+				double endTime_localSearch;
+				double duration_localSearch=0;
+	
+				//do regular local search
+				for(int i=0; i<10; i++){
+					currentSolution = new ArrayList<Recipe>();
+					otherCandidates = new ArrayList<Recipe>();
+	
+					in = new LocalSearch(file);
+	
+					//initialize regular local starting solution and time 
+					startTime_localStartingSol = System.nanoTime(); //timer
+					in.initializeStartingSolution(isAnyImp);
+					endTime_localStartingSol = System.nanoTime();// timer
+					duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
+	
+					//do regular local search and time 
+					startTime_localSearch = System.nanoTime(); //timer
+					sol = in.doLocalSearch(isAnyImp);
+					endTime_localSearch = System.nanoTime();// timer
+					duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+				}
+				duration_localStartingSol=duration_localStartingSol/10000000;
+				duration_localSearch=duration_localSearch/10000000;
+	
+				if(isAnyImp){
+					System.out.println("\nANYIMP SEARCH:\n");
+				} else {
+					System.out.println("\nLOCAL SEARCH:\n");
+				}
+				System.out.println("Final solution: "+sol.toString());
+				System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+				System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
+			}
 		}
->>>>>>> timer
-
-		duration_localStartingSol=duration_localStartingSol/100000000;
-		duration_localSearch=duration_localSearch/100000000;
-		
-		System.out.println("Final solution: "+sol.toString());
-		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
-		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 	}
 
-	public LocalSearch(){
+	public LocalSearch(File file){
 		DataSet data= new DataSet();
-		recipes = data.getData(); //creates all the data sets
+		recipes = data.getData(file); //creates all the data sets
 		neighborMatrix = data.getNeighborMatrix(); //initialized all to 2's (not yet checked)
 	}
 
@@ -101,10 +112,10 @@ public class LocalSearch {
 	private void initializeStartingSolution(boolean greedy) {
 		if(greedy){// We must sort the set of recipes according to weight
 			Collections.sort(recipes, new Comparator<Recipe>(){
-			    @Override
-			    public int compare(Recipe r1, Recipe r2) {
-			        return r1.getWeight() < r2.getWeight()? 1 : r1.getWeight() > r2.getWeight()? -1 : 0;
-			    }
+				@Override
+				public int compare(Recipe r1, Recipe r2) {
+					return r1.getWeight() < r2.getWeight()? 1 : r1.getWeight() > r2.getWeight()? -1 : 0;
+				}
 			});
 		}
 		for(int k=0; k < recipes.size(); k++){
@@ -257,7 +268,7 @@ public class LocalSearch {
 
 				int swappedOutSetWeight = getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight();
 				double weightToBeat = isAnyImp? swappedOutSetWeight * IMP_THRESHOLD : swappedOutSetWeight;
-				
+
 				// Keep this new solution iff the swap in set is larger in weight than the swap out set
 				if(getTotalWeight(potentialSwapInRecipes) > weightToBeat){
 					//Now we must update the current solution to reflect those taken out & added in
