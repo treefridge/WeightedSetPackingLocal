@@ -34,4 +34,8 @@ public class Recipe {
 	public void setRecipeNumber(int number) {
 		this.recipeNumber = number;
 	}
+	
+	public void reset() {
+		serialNum=0;
+	}
 }
