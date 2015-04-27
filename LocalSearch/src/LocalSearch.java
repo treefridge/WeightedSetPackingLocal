@@ -38,9 +38,14 @@ public class LocalSearch {
 
 	public static void main(String[] args) {
 		boolean isAnyImp = false;
-		while(! isAnyImp){
+		for(int j = 0; j < 2; j++){
+			if(j == 1){
+				isAnyImp = true;
+			}
+			
 			ArrayList<Recipe> sol = null;
 			LocalSearch in = null;
+			
 			//timers
 			double startTime_localStartingSol;
 			double endTime_localStartingSol;
@@ -51,8 +56,8 @@ public class LocalSearch {
 
 			//do regular local search
 			for(int i=0; i<10; i++){
-
-				isAnyImp = false;
+				currentSolution = new ArrayList<Recipe>();
+				otherCandidates = new ArrayList<Recipe>();
 
 				in = new LocalSearch();
 
@@ -72,15 +77,13 @@ public class LocalSearch {
 			duration_localSearch=duration_localSearch/100000000;
 
 			if(isAnyImp){
-				System.out.println("ANYIMP SEARCH:\n");
+				System.out.println("\nANYIMP SEARCH:\n");
 			} else {
-				System.out.println("LOCAL SEARCH:\n");
+				System.out.println("\nLOCAL SEARCH:\n");
 			}
 			System.out.println("Final solution: "+sol.toString());
 			System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
 			System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
-			
-			isAnyImp = true;
 		}
 	}
 
