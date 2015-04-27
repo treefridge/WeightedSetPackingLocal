@@ -1,13 +1,14 @@
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
+
+import org.apache.commons.io.FilenameUtils;
 
 
 public class LocalSearch {
@@ -37,59 +38,70 @@ public class LocalSearch {
 
 
 	public static void main(String[] args) {
-		boolean isAnyImp = false;
-		for(int j = 0; j < 2; j++){
-			if(j == 1){
-				isAnyImp = true;
-			}
+		File path = new File("data/");
+		for(File file: path.listFiles()){
 			
-			ArrayList<Recipe> sol = null;
-			LocalSearch in = null;
+			String name = FilenameUtils.getExtension(file.getAbsolutePath());
+			if(file != null && !FilenameUtils.getExtension(file.getAbsolutePath()).equals("txt")){
+				continue;
+			}
+
+			System.out.println("\nRunning on file:"+ file.getName() + "\n");
 			
-			//timers
-			double startTime_localStartingSol;
-			double endTime_localStartingSol;
-			double duration_localStartingSol = 0;
-			double startTime_localSearch;
-			double endTime_localSearch;
-			double duration_localSearch=0;
-
-			//do regular local search
-			for(int i=0; i<10; i++){
-				currentSolution = new ArrayList<Recipe>();
-				otherCandidates = new ArrayList<Recipe>();
-
-				in = new LocalSearch();
-
-				//initialize regular local starting solution and time 
-				startTime_localStartingSol = System.nanoTime(); //timer
-				in.initializeStartingSolution(isAnyImp);
-				endTime_localStartingSol = System.nanoTime();// timer
-				duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
-
-				//do regular local search and time 
-				startTime_localSearch = System.nanoTime(); //timer
-				sol = in.doLocalSearch(isAnyImp);
-				endTime_localSearch = System.nanoTime();// timer
-				duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+			boolean isAnyImp = false;
+			for(int j = 0; j < 2; j++){
+				if(j == 1){
+					isAnyImp = true;
+				}
+				
+				ArrayList<Recipe> sol = null;
+				LocalSearch in = null;
+				
+				//timers
+				double startTime_localStartingSol;
+				double endTime_localStartingSol;
+				double duration_localStartingSol = 0;
+				double startTime_localSearch;
+				double endTime_localSearch;
+				double duration_localSearch=0;
+	
+				//do regular local search
+				for(int i=0; i<10; i++){
+					currentSolution = new ArrayList<Recipe>();
+					otherCandidates = new ArrayList<Recipe>();
+	
+					in = new LocalSearch(file);
+	
+					//initialize regular local starting solution and time 
+					startTime_localStartingSol = System.nanoTime(); //timer
+					in.initializeStartingSolution(isAnyImp);
+					endTime_localStartingSol = System.nanoTime();// timer
+					duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
+	
+					//do regular local search and time 
+					startTime_localSearch = System.nanoTime(); //timer
+					sol = in.doLocalSearch(isAnyImp);
+					endTime_localSearch = System.nanoTime();// timer
+					duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+				}
+				duration_localStartingSol=duration_localStartingSol/100000000;
+				duration_localSearch=duration_localSearch/100000000;
+	
+				if(isAnyImp){
+					System.out.println("\nANYIMP SEARCH:\n");
+				} else {
+					System.out.println("\nLOCAL SEARCH:\n");
+				}
+				System.out.println("Final solution: "+sol.toString());
+				System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+				System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 			}
-			duration_localStartingSol=duration_localStartingSol/100000000;
-			duration_localSearch=duration_localSearch/100000000;
-
-			if(isAnyImp){
-				System.out.println("\nANYIMP SEARCH:\n");
-			} else {
-				System.out.println("\nLOCAL SEARCH:\n");
-			}
-			System.out.println("Final solution: "+sol.toString());
-			System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
-			System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 		}
 	}
 
-	public LocalSearch(){
+	public LocalSearch(File file){
 		DataSet data= new DataSet();
-		recipes = data.getData(); //creates all the data sets
+		recipes = data.getData(file); //creates all the data sets
 		neighborMatrix = data.getNeighborMatrix(); //initialized all to 2's (not yet checked)
 	}
 
