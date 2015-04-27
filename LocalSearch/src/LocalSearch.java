@@ -37,84 +37,51 @@ public class LocalSearch {
 
 
 	public static void main(String[] args) {
+		boolean isAnyImp = false;
+		while(! isAnyImp){
+			ArrayList<Recipe> sol = null;
+			LocalSearch in = null;
+			//timers
+			double startTime_localStartingSol;
+			double endTime_localStartingSol;
+			double duration_localStartingSol = 0;
+			double startTime_localSearch;
+			double endTime_localSearch;
+			double duration_localSearch=0;
 
-//		if(args.length != 1){
-//			System.out.println("Invalid num arguments, keeling over now.");
-//			System.exit(1);
-//		}
+			//do regular local search
+			for(int i=0; i<10; i++){
 
-		Boolean isAnyImp ;
-		ArrayList<Recipe> sol = null;
-		LocalSearch in = null;
-		//timers
-		double startTime_localStartingSol;
-		double endTime_localStartingSol;
-		double duration_localStartingSol = 0;
-		double startTime_localSearch;
-		double endTime_localSearch;
-		double duration_localSearch=0;
+				isAnyImp = false;
 
-		//do regular local search
-		for(int i=0; i<10; i++){
+				in = new LocalSearch();
 
-			isAnyImp = false;
+				//initialize regular local starting solution and time 
+				startTime_localStartingSol = System.nanoTime(); //timer
+				in.initializeStartingSolution(isAnyImp);
+				endTime_localStartingSol = System.nanoTime();// timer
+				duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
 
-			in = new LocalSearch();
+				//do regular local search and time 
+				startTime_localSearch = System.nanoTime(); //timer
+				sol = in.doLocalSearch(isAnyImp);
+				endTime_localSearch = System.nanoTime();// timer
+				duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+			}
+			duration_localStartingSol=duration_localStartingSol/100000000;
+			duration_localSearch=duration_localSearch/100000000;
 
-			//initialize regular local starting solution and time 
-			startTime_localStartingSol = System.nanoTime(); //timer
-			in.initializeStartingSolution(isAnyImp);
-			endTime_localStartingSol = System.nanoTime();// timer
-			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
-
-			//do regular local search and time 
-			startTime_localSearch = System.nanoTime(); //timer
-			sol = in.doLocalSearch(isAnyImp);
-			endTime_localSearch = System.nanoTime();// timer
-			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
-		}
-
-
-		duration_localStartingSol=duration_localStartingSol/100000000;
-		duration_localSearch=duration_localSearch/100000000;
-
-		System.out.println("LOCAL SEARCH:\n");
-		System.out.println("Final solution: "+sol.toString());
-		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
-		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
-		
-		
-		//do greedy local search
-		duration_localStartingSol = 0;
-		duration_localSearch=0;
-		for(int i=0; i<10; i++){
-
+			if(isAnyImp){
+				System.out.println("ANYIMP SEARCH:\n");
+			} else {
+				System.out.println("LOCAL SEARCH:\n");
+			}
+			System.out.println("Final solution: "+sol.toString());
+			System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+			System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
+			
 			isAnyImp = true;
-
-			in = new LocalSearch();
-
-			//initialize regular local starting solution and time 
-			startTime_localStartingSol = System.nanoTime(); //timer
-			in.initializeStartingSolution(isAnyImp);
-			endTime_localStartingSol = System.nanoTime();// timer
-			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
-
-			//do regular local search and time 
-			startTime_localSearch = System.nanoTime(); //timer
-			sol = in.doLocalSearch(isAnyImp);
-			endTime_localSearch = System.nanoTime();// timer
-			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
 		}
-
-
-		duration_localStartingSol=duration_localStartingSol/100000000;
-		duration_localSearch=duration_localSearch/100000000;
-
-		System.out.println("====================================");
-		System.out.println("\nGREEDY SEARCH:\n");
-		System.out.println("Final solution: "+sol.toString());
-		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
-		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 	}
 
 	public LocalSearch(){
