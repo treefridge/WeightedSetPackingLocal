@@ -73,8 +73,8 @@ public class LocalSearch {
 				endTime_localSearch = System.nanoTime();// timer
 				duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
 			}
-			duration_localStartingSol=duration_localStartingSol/100000000;
-			duration_localSearch=duration_localSearch/100000000;
+			duration_localStartingSol=duration_localStartingSol/10000000;
+			duration_localSearch=duration_localSearch/10000000;
 
 			if(isAnyImp){
 				System.out.println("\nANYIMP SEARCH:\n");
