@@ -94,8 +94,8 @@ public class LocalSearch {
 				}
 				System.out.println("Final solution: "+sol.toString());
 				System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
-				System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
-			}
+				System.out.println("Starting Solution Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
+			}System.out.println("\n================================================");
 		}
 	}
 
