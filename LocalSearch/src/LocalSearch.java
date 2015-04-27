@@ -31,27 +31,21 @@ public class LocalSearch {
 	private static final int DECREASE_RATIO = 2;
 
 	private static final double IMP_THRESHOLD = 1.1;
-	
+
 	//TODO make use of this one if iterating over all possible combinations ends up being a bottleneck:
 	private static final int NUM_SWAP_TRIES = 30; // Number of subsets to evaluate for adding back in
 
 
 	public static void main(String[] args) {
-<<<<<<< HEAD
-		if(args.length != 1){
-			System.out.println("Invalid num arguments, keeling over now.");
-			System.exit(1);
-		}
-		//Check which one we are running, if true, anyImp, else regular local search
-		Boolean isAnyImp = Boolean.parseBoolean(args[0]);
-		
-		LocalSearch in = new LocalSearch();
-		in.initializeStartingSolution(isAnyImp);
-		ArrayList<Recipe> sol = in.doLocalSearch(isAnyImp);
-=======
+
+//		if(args.length != 1){
+//			System.out.println("Invalid num arguments, keeling over now.");
+//			System.exit(1);
+//		}
+
+		Boolean isAnyImp ;
 		ArrayList<Recipe> sol = null;
 		LocalSearch in = null;
-		
 		//timers
 		double startTime_localStartingSol;
 		double endTime_localStartingSol;
@@ -60,29 +54,64 @@ public class LocalSearch {
 		double endTime_localSearch;
 		double duration_localSearch=0;
 
+		//do regular local search
 		for(int i=0; i<10; i++){
-			currentSolution = new ArrayList<Recipe>();
-			otherCandidates = new ArrayList<Recipe>();
-			
+
+			isAnyImp = false;
+
 			in = new LocalSearch();
 
 			//initialize regular local starting solution and time 
 			startTime_localStartingSol = System.nanoTime(); //timer
-			in.initializeStartingSolution();
+			in.initializeStartingSolution(isAnyImp);
 			endTime_localStartingSol = System.nanoTime();// timer
 			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
 
 			//do regular local search and time 
 			startTime_localSearch = System.nanoTime(); //timer
-			sol = in.doLocalSearch();
+			sol = in.doLocalSearch(isAnyImp);
 			endTime_localSearch = System.nanoTime();// timer
 			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
 		}
->>>>>>> timer
+
 
 		duration_localStartingSol=duration_localStartingSol/100000000;
 		duration_localSearch=duration_localSearch/100000000;
+
+		System.out.println("LOCAL SEARCH:\n");
+		System.out.println("Final solution: "+sol.toString());
+		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 		
+		
+		//do greedy local search
+		duration_localStartingSol = 0;
+		duration_localSearch=0;
+		for(int i=0; i<10; i++){
+
+			isAnyImp = true;
+
+			in = new LocalSearch();
+
+			//initialize regular local starting solution and time 
+			startTime_localStartingSol = System.nanoTime(); //timer
+			in.initializeStartingSolution(isAnyImp);
+			endTime_localStartingSol = System.nanoTime();// timer
+			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
+
+			//do regular local search and time 
+			startTime_localSearch = System.nanoTime(); //timer
+			sol = in.doLocalSearch(isAnyImp);
+			endTime_localSearch = System.nanoTime();// timer
+			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+		}
+
+
+		duration_localStartingSol=duration_localStartingSol/100000000;
+		duration_localSearch=duration_localSearch/100000000;
+
+		System.out.println("====================================");
+		System.out.println("\nGREEDY SEARCH:\n");
 		System.out.println("Final solution: "+sol.toString());
 		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
 		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
@@ -101,10 +130,10 @@ public class LocalSearch {
 	private void initializeStartingSolution(boolean greedy) {
 		if(greedy){// We must sort the set of recipes according to weight
 			Collections.sort(recipes, new Comparator<Recipe>(){
-			    @Override
-			    public int compare(Recipe r1, Recipe r2) {
-			        return r1.getWeight() < r2.getWeight()? 1 : r1.getWeight() > r2.getWeight()? -1 : 0;
-			    }
+				@Override
+				public int compare(Recipe r1, Recipe r2) {
+					return r1.getWeight() < r2.getWeight()? 1 : r1.getWeight() > r2.getWeight()? -1 : 0;
+				}
 			});
 		}
 		for(int k=0; k < recipes.size(); k++){
@@ -257,7 +286,7 @@ public class LocalSearch {
 
 				int swappedOutSetWeight = getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight();
 				double weightToBeat = isAnyImp? swappedOutSetWeight * IMP_THRESHOLD : swappedOutSetWeight;
-				
+
 				// Keep this new solution iff the swap in set is larger in weight than the swap out set
 				if(getTotalWeight(potentialSwapInRecipes) > weightToBeat){
 					//Now we must update the current solution to reflect those taken out & added in
