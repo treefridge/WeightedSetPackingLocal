@@ -6,6 +6,7 @@
 # Package Files #
 *.jar
 !combinatoricslib-2.1.jar
+!commons-io-2.4.jar
 *.war
 *.ear
 
