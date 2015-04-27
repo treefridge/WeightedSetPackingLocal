@@ -30,15 +30,23 @@ public class LocalSearch {
 	 */
 	private static final int DECREASE_RATIO = 2;
 
+	private static final double IMP_THRESHOLD = 1.1;
+	
 	//TODO make use of this one if iterating over all possible combinations ends up being a bottleneck:
 	private static final int NUM_SWAP_TRIES = 30; // Number of subsets to evaluate for adding back in
 
 
 	public static void main(String[] args) {
+		if(args.length != 1){
+			System.out.println("Invalid num arguments, keeling over now.");
+			System.exit(1);
+		}
+		//Check which one we are running, if true, anyImp, else regular local search
+		Boolean isAnyImp = Boolean.parseBoolean(args[0]);
 		
 		LocalSearch in = new LocalSearch();
-		in.initializeStartingSolution();
-		ArrayList<Recipe> sol = in.doLocalSearch();
+		in.initializeStartingSolution(isAnyImp);
+		ArrayList<Recipe> sol = in.doLocalSearch(isAnyImp);
 
 		System.out.println("Final solution: "+sol.toString());
 		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
@@ -51,9 +59,18 @@ public class LocalSearch {
 	}
 
 	/**
-	 * @return a non-greedy starting solution of disjoint recipes
+	 * If the argument is true, will sort the recipes by decreasing weight first, to return a greedy starting solution
+	 * @return a starting solution of disjoint recipes
 	 */
-	private void initializeStartingSolution() {
+	private void initializeStartingSolution(boolean greedy) {
+		if(greedy){// We must sort the set of recipes according to weight
+			Collections.sort(recipes, new Comparator<Recipe>(){
+			    @Override
+			    public int compare(Recipe r1, Recipe r2) {
+			        return r1.getWeight() < r2.getWeight()? 1 : r1.getWeight() > r2.getWeight()? -1 : 0;
+			    }
+			});
+		}
 		for(int k=0; k < recipes.size(); k++){
 			Recipe recipe = recipes.get(k);
 
@@ -62,7 +79,7 @@ public class LocalSearch {
 				currentSolution.add(recipe);
 			} else {
 				//add recipe to recipes - solution
-				otherCandidates.add(recipe); //TODO ALTER FOR GREEDY APPROACH CONVERSION
+				otherCandidates.add(recipe);
 			}
 		}
 	}
@@ -148,7 +165,7 @@ public class LocalSearch {
 	 * The potential "swapped-out" subsets are all of the combinations of subsets of appropriate size of the solution
 	 * @return the solution that local search generated
 	 */
-	private ArrayList<Recipe> doLocalSearch() {
+	private ArrayList<Recipe> doLocalSearch(boolean isAnyImp) {
 		if(currentSolution == null || currentSolution.size() == 0){
 			throw new IllegalArgumentException("Provided solution was invalid.");
 		}
@@ -203,8 +220,11 @@ public class LocalSearch {
 				//				System.out.println("after conflict resolution: "+potentialSwapInRecipes);
 				//				System.out.println("wAfter= "+getTotalWeight(potentialSwapInRecipes) + " wCurr= "+(getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight()));
 
+				int swappedOutSetWeight = getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight();
+				double weightToBeat = isAnyImp? swappedOutSetWeight * IMP_THRESHOLD : swappedOutSetWeight;
+				
 				// Keep this new solution iff the swap in set is larger in weight than the swap out set
-				if(getTotalWeight(potentialSwapInRecipes) > getTotalWeight(combinationRecipes) + recipeForExpansion.getWeight()){
+				if(getTotalWeight(potentialSwapInRecipes) > weightToBeat){
 					//Now we must update the current solution to reflect those taken out & added in
 					updateCurrentSolution(solutionAfterSwapOut, otherCandidatesAfterSwapOut, potentialSwapInRecipes);//TODO changes clarify
 					break;
@@ -270,18 +290,6 @@ public class LocalSearch {
 	 * @return potentialSwapIns with all conflicts eliminated (keeping the one of greatest weight, when applicable)
 	 */
 	private ArrayList<Recipe> resolveAllConflicts(ArrayList<Recipe> potentialSwapIns, ArrayList<Recipe> solutionAfterSwapOut) {
-		//		for(int i = potentialSwapIns.size() - 1; i > -1; --i){
-		//			for(int j = potentialSwapIns.size() - 1; j > -1; --j){
-		//				Recipe r1 = potentialSwapIns.get(i);
-		//				Recipe r2 = potentialSwapIns.get(j);
-		//				// Do not check a recipe against itself, nor a recipe that is already flagged as to-be-removed
-		//				if(r1 == r2){
-		//					continue;
-		//				} else if(! areDisjointRecipes(r1, r2)){
-		//					potentialSwapIns.remove(r1.getWeight() >= r2.getWeight()? r2 : r1);
-		//				}
-		//			}
-		//		}
 
 		// Keep track of all recipes to be removed, avoid making direct changes to potentialSwapIns since we are not using safe Iterator objects
 		ArrayList<Recipe> toBeRemoved = new ArrayList<Recipe>();
