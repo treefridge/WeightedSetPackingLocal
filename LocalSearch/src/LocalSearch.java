@@ -205,8 +205,9 @@ public class LocalSearch {
 	 * Manually checks if 2 recipes are disjoint and then updates adjacency matrix
 	 * @param recipe01
 	 * @param recipe02
+	 * @return 1 for conflicting recipes, 0 for disjoint recipes
 	 */
-	private void checkForDisjoint(Recipe recipe01, Recipe recipe02) {
+	private int checkForDisjoint(Recipe recipe01, Recipe recipe02) {
 
 		Integer[] recipe1= recipe01.getIngredients();
 		Integer[] recipe2 = recipe02.getIngredients();
@@ -217,7 +218,7 @@ public class LocalSearch {
 					//update adjacency matrix
 					neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 1;
 					neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 1;
-					return;
+					return 1;
 				}
 			}
 		}
@@ -226,7 +227,7 @@ public class LocalSearch {
 		//update adjacency matrix
 		neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 0;
 		neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 0;
-
+		return 0;
 	}
 
 	/**
@@ -423,6 +424,15 @@ public class LocalSearch {
 		for(int col = 0; col < neighborMatrix.length; col++){
 			if(neighborMatrix[row][col] == 1){
 				neighborRecipeNumbers.add(col);
+			} else if(neighborMatrix[row][col] == 2){
+				//We must compute this and check whether they are in conflict
+				for(Recipe recipe : recipes){
+					if(recipe.getRecipeNumber() == col){
+						if(checkForDisjoint(recipeForExpansion, recipe) == 1){
+							neighborRecipeNumbers.add(col);
+						}
+					}
+				}
 			}
 		}
 
