@@ -1,13 +1,14 @@
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
+
+import org.apache.commons.io.FilenameUtils;
 
 
 public class LocalSearch {
@@ -23,7 +24,7 @@ public class LocalSearch {
 	 */
 	private int[][] neighborMatrix;
 
-	private static final int MAX_NUM_SUBSET_REMOVED = 2; //number of subsets that get swapped out during doLocalSearch()//TODO 1 is problem
+	private static final int MAX_NUM_SUBSET_REMOVED = 3; //number of subsets that get swapped out during doLocalSearch()
 	/**
 	 * The rate at which the number of recipes for removal from the solution is decreased relative to the total # of solution recipes.
 	 * 2 means that the number of recipes for removal is set to currentSolution size / 2 if MAX_NUM_SUBSET_REMOVED is larger than currentSolution size
@@ -41,20 +42,30 @@ public class LocalSearch {
 			System.out.println("Invalid num arguments, keeling over now.");
 			System.exit(1);
 		}
-		//Check which one we are running, if true, anyImp, else regular local search
-		Boolean isAnyImp = Boolean.parseBoolean(args[0]);
-		
-		LocalSearch in = new LocalSearch();
-		in.initializeStartingSolution(isAnyImp);
-		ArrayList<Recipe> sol = in.doLocalSearch(isAnyImp);
-
-		System.out.println("Final solution: "+sol.toString());
-		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+		File path = new File("data/");
+		for(File file: path.listFiles()){
+			String name = FilenameUtils.getExtension(file.getAbsolutePath());
+			if(file != null && !FilenameUtils.getExtension(file.getAbsolutePath()).equals("txt")){
+				continue;
+			}
+			//Check which one we are running, if true, anyImp, else regular local search
+			Boolean isAnyImp = Boolean.parseBoolean(args[0]);
+			
+			LocalSearch in = new LocalSearch(file);
+			in.currentSolution = new ArrayList<Recipe>();
+			in.otherCandidates = new ArrayList<Recipe>();
+			
+			in.initializeStartingSolution(isAnyImp);
+			ArrayList<Recipe> sol = in.doLocalSearch(isAnyImp);
+	
+			System.out.println("Final solution: "+sol.toString());
+			System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+		}
 	}
 
-	public LocalSearch(){
+	public LocalSearch(File file){
 		DataSet data= new DataSet();
-		recipes = data.getData(); //creates all the data sets
+		recipes = data.getData(file); //creates all the data sets
 		neighborMatrix = data.getNeighborMatrix(); //initialized all to 2's (not yet checked)
 	}
 
