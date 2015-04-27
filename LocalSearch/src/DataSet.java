@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 
 
 /**
@@ -47,6 +46,13 @@ public class DataSet {
 			return recipes;
 		}
 		recipes = new ArrayList<Recipe>();
+		
+		//reset 
+		Integer[] temp={1};
+		Recipe temp1= new Recipe(temp, 0);
+		temp1.reset();
+		
+		
 
 /*		Integer[] recipe1= {1,2,3};			//conflicts with 3,7
 		Integer[] recipe2= {4,5,6};			//conflicts with 4,5
@@ -102,7 +108,7 @@ public class DataSet {
 	    }
 		
 		//testing purposes
-		System.out.println("IngredientCount= " + ingredientCount + " RecipeCount= " + recipeCount + " ActualRecipeCount= " + recipes.size());
+		//System.out.println("IngredientCount= " + ingredientCount + " RecipeCount= " + recipeCount + " ActualRecipeCount= " + recipes.size());
 		
 
 		return recipes;

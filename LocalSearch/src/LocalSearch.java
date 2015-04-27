@@ -13,9 +13,9 @@ import org.paukov.combinatorics.ICombinatoricsVector;
 public class LocalSearch {
 
 	private ArrayList<Recipe> recipes = new ArrayList<Recipe>();
-	private ArrayList<Recipe> currentSolution = new ArrayList<Recipe>();
-	private ArrayList<Recipe> otherCandidates = new ArrayList<Recipe>();
-	
+	private static ArrayList<Recipe> currentSolution = new ArrayList<Recipe>();
+	private static ArrayList<Recipe> otherCandidates = new ArrayList<Recipe>();
+
 	/**
 	 * 0 = not intersecting<br>
 	 * 1= intersecting<br>
@@ -35,13 +35,42 @@ public class LocalSearch {
 
 
 	public static void main(String[] args) {
+		ArrayList<Recipe> sol = null;
+		LocalSearch in = null;
 		
-		LocalSearch in = new LocalSearch();
-		in.initializeStartingSolution();
-		ArrayList<Recipe> sol = in.doLocalSearch();
+		//timers
+		double startTime_localStartingSol;
+		double endTime_localStartingSol;
+		double duration_localStartingSol = 0;
+		double startTime_localSearch;
+		double endTime_localSearch;
+		double duration_localSearch=0;
 
+		for(int i=0; i<10; i++){
+			currentSolution = new ArrayList<Recipe>();
+			otherCandidates = new ArrayList<Recipe>();
+			
+			in = new LocalSearch();
+
+			//initialize regular local starting solution and time 
+			startTime_localStartingSol = System.nanoTime(); //timer
+			in.initializeStartingSolution();
+			endTime_localStartingSol = System.nanoTime();// timer
+			duration_localStartingSol += (endTime_localStartingSol - startTime_localStartingSol);
+
+			//do regular local search and time 
+			startTime_localSearch = System.nanoTime(); //timer
+			sol = in.doLocalSearch();
+			endTime_localSearch = System.nanoTime();// timer
+			duration_localSearch += (endTime_localSearch - startTime_localSearch);//1000000;
+		}
+
+		duration_localStartingSol=duration_localStartingSol/100000000;
+		duration_localSearch=duration_localSearch/100000000;
+		
 		System.out.println("Final solution: "+sol.toString());
 		System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
+		System.out.println("Starting sol Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 	}
 
 	public LocalSearch(){
@@ -103,7 +132,7 @@ public class LocalSearch {
 
 		case 1: return false;
 
-		case 2: checkForDisjoint(recipe1, recipe2);
+		case 2: checkForDisjoint(recipe1, recipe2); //compute adjacency value now
 		}
 
 		return areDisjointRecipes(recipe1, recipe2); //used iff case 2
@@ -116,8 +145,8 @@ public class LocalSearch {
 	/**
 	 * Used when value for adjacency matrix not yet computed<br>
 	 * Manually checks if 2 recipes are disjoint and then updates adjacency matrix
-	 * @param recipe1
-	 * @param recipe2
+	 * @param recipe01
+	 * @param recipe02
 	 */
 	private void checkForDisjoint(Recipe recipe01, Recipe recipe02) {
 
@@ -126,7 +155,7 @@ public class LocalSearch {
 
 		for(int i=0; i<recipe1.length; i++){
 			for (int j=0; j<recipe2.length; j++){
-				if(recipe1[i].equals(recipe2[j])){
+				if(recipe1[i].equals(recipe2[j])){ //if intersection 
 					//update adjacency matrix
 					neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 1;
 					neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 1;
@@ -135,11 +164,10 @@ public class LocalSearch {
 			}
 		}
 
+		//if no intersection
 		//update adjacency matrix
 		neighborMatrix[recipe01.getRecipeNumber()][recipe02.getRecipeNumber()] = 0;
 		neighborMatrix[recipe02.getRecipeNumber()][recipe01.getRecipeNumber()] = 0;
-		return;
-
 
 	}
 
