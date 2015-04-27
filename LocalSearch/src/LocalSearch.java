@@ -16,6 +16,12 @@ public class LocalSearch {
 	private ArrayList<Recipe> recipes = new ArrayList<Recipe>();
 	private static ArrayList<Recipe> currentSolution = new ArrayList<Recipe>();
 	private static ArrayList<Recipe> otherCandidates = new ArrayList<Recipe>();
+	private static double dur1=0;
+	private static double dur2=0;
+	private static double dur3=0;
+	private static double dur4=0;
+	private static double w1=0;
+	private static double w2=0;
 
 	/**
 	 * 0 = not intersecting<br>
@@ -86,17 +92,34 @@ public class LocalSearch {
 				}
 				duration_localStartingSol=duration_localStartingSol/10000000;
 				duration_localSearch=duration_localSearch/10000000;
+
 	
 				if(isAnyImp){
 					System.out.println("\nANYIMP SEARCH:\n");
+					dur3+=duration_localStartingSol;
+					dur4+=duration_localSearch;
+					w2+=in.getTotalWeight(in.currentSolution);
 				} else {
 					System.out.println("\nLOCAL SEARCH:\n");
+					dur1+=duration_localStartingSol;
+					dur2+=duration_localSearch;
+					w1+=in.getTotalWeight(in.currentSolution);
+					
 				}
 				System.out.println("Final solution: "+sol.toString());
+				System.out.println("Solution Size: " + sol.size());
 				System.out.println("Total weight = "+in.getTotalWeight(in.currentSolution));
 				System.out.println("Starting Solution Time: "+duration_localStartingSol + " ms, Search Time: " + duration_localSearch +" ms");
 			}System.out.println("\n================================================");
 		}
+		System.out.println("Local Search Starting Solution (Average): " + dur1/8 );
+		System.out.println("Local Search Alg Solution (Average): " + dur2/8 );
+		System.out.println("Local Search Weight (Average): " + w1/8 +"\n");
+		
+		System.out.println("AnyImp Search Starting Solution (Average): " + dur3/8 );
+		System.out.println("AnyImp Search Alg Solution (Average): " + dur4/8 );
+		System.out.println("AnyImp Search Weight (Average): " + w2/8 );
+		
 	}
 
 	public LocalSearch(File file){
